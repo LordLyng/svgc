@@ -11,7 +11,6 @@ namespace SvgConverter
         {
             ImageTypeArgument = new Argument<string>(() => "png");
             ImageTypeArgument.Description = "All media types supported by ImageMagick, see https://github.com/dlemstra/Magick.NET/blob/master/src/Magick.NET/Shared/Enums/MagickFormat.cs";
-            // ImageTypeArgument.AddSuggestions(new List<string>() { "All media types supported by ImageMagick, see https://github.com/dlemstra/Magick.NET/blob/master/src/Magick.NET/Shared/Enums/MagickFormat.cs" });
             ImageTypeArgument.AddValidator(result =>
             {
                 var val = result.GetValueOrDefault<string>();
