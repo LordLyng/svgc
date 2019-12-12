@@ -1,0 +1,86 @@
+﻿using Svg;
+using System;
+using System.Collections.Generic;
+using System.CommandLine;
+using System.CommandLine.Invocation;
+using System.Drawing.Imaging;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+
+namespace SvgConverter
+{
+    class Program
+    {
+        static int Main(string[] args)
+        {
+            var heightArgument = new Argument<int>();
+            heightArgument.SetDefaultValue(0);
+
+            var widthArgument = new Argument<int>();
+            widthArgument.SetDefaultValue(0);
+
+            var imageTypeArgument = new Argument<string>();
+
+            imageTypeArgument.AddSuggestions(GetAvailableImageFormats());
+            imageTypeArgument.SetDefaultValue("png");
+            imageTypeArgument.AddValidator(result =>
+            {
+                var val = result.GetValueOrDefault<string>();
+
+                if (GetAvailableImageFormats()
+                    .Any(name => string.Equals(val, name, StringComparison.CurrentCultureIgnoreCase)))
+                {
+                    return null;
+                }
+
+                return "Invalid image format, please select from the list";
+            });
+
+            var command = new RootCommand()
+            {
+                new Option("--input") {Argument = new Argument<string>(), Description = "Path (relative or absolute to the svg to be converted)", Required = true},
+                new Option("--output") {Argument = new Argument<string>(), Description = "Output path", Required = false},
+                new Option("--image-type") {Argument = imageTypeArgument, Description = "Set the desired type of the output image, defaults to \"png\"", Required = false},
+                new Option("--height") {Argument = heightArgument, Description = "Sets the height in pixels of the resulting image", Required = false},
+                new Option("--width") {Argument = widthArgument, Description = "Sets the width in pixels of the resulting image", Required = false},
+            };
+            command.Description = "Converts svg files to image files";
+            command.Handler = CommandHandler.Create((string input, string output, string imageType, int height, int width) =>
+            {
+                if (string.IsNullOrWhiteSpace(input))
+                    return;
+
+                if (string.IsNullOrWhiteSpace(output))
+                    output = input.Replace("svg", imageType);
+
+                using (var fs = new FileStream(input, FileMode.Open))
+                {
+                    var svgDoc = SvgDocument.Open<SvgDocument>(fs);
+                    var bitmap = svgDoc.Draw(rasterWidth: width, rasterHeight: height);
+                    bitmap.Save(output, getImageFormatFromString(imageType));
+                }
+            });
+
+            return command.InvokeAsync(args).Result;
+        }
+
+        static IReadOnlyCollection<string> GetAvailableImageFormats()
+        {
+            var imageFormatType = typeof(ImageFormat);
+
+            return imageFormatType.GetProperties(BindingFlags.Public | BindingFlags.Static).Where(pro => pro.PropertyType == typeof(ImageFormat)).Select(img => img.Name).ToList();
+        }
+
+        static ImageFormat getImageFormatFromString(string input)
+        {
+            var imageFormatType = typeof(ImageFormat);
+
+            var prop = imageFormatType.GetProperties(BindingFlags.Public | BindingFlags.Static).SingleOrDefault(pro =>
+                pro.PropertyType == typeof(ImageFormat) &&
+                string.Equals(pro.Name, input, StringComparison.CurrentCultureIgnoreCase));
+
+            return (ImageFormat)prop.GetValue(null);
+        }
+    }
+}
