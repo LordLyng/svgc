@@ -10,7 +10,7 @@ namespace SvgConverter
 
             var command = new RootCommand()
             {
-                Options.InputOption,
+                Arguments.InputArgument,
                 Options.OutputOption,
                 Options.ImageTypeOption,
                 Options.HeightOption,
@@ -18,7 +18,7 @@ namespace SvgConverter
                 Options.BackgroundOption
             };
             command.Description = "Converts svg files to image files";
-            command.Handler = System.CommandLine.Invocation.CommandHandler.Create<string, string, string, int, int, string>(CommandHandler.Handle);
+            command.Handler = System.CommandLine.Invocation.CommandHandler.Create<string, string, string, int, int, string, int>(CommandHandler.Handle);
 
             return command.InvokeAsync(args).Result;
         }
