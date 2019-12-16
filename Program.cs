@@ -1,5 +1,6 @@
 ﻿using System.CommandLine;
 using System.CommandLine.Invocation;
+using System.IO;
 
 namespace SvgConverter
 {
@@ -18,7 +19,7 @@ namespace SvgConverter
                 Options.BackgroundOption
             };
             command.Description = "Converts svg files to image files";
-            command.Handler = System.CommandLine.Invocation.CommandHandler.Create<string, string, string, int, int, string, int>(CommandHandler.Handle);
+            command.Handler = System.CommandLine.Invocation.CommandHandler.Create<FileInfo, FileInfo, string, int, int, string>(CommandHandler.Handle);
 
             return command.InvokeAsync(args).Result;
         }
