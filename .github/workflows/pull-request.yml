@@ -1,12 +1,10 @@
-name: .NET Core
+name: pull-request
 
-on: [push]
-
+on: pull_request
+  
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v1
     - name: Setup .NET Core
@@ -14,6 +12,4 @@ jobs:
       with:
         dotnet-version: 3.0.100
     - name: Build with dotnet
-      run: dotnet build --configuration Release
-    - name: Pack with dotnet
-      run: dotnet pack --configuration Release
+      run: dotnet build

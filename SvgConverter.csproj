@@ -11,7 +11,6 @@
 
   <PropertyGroup>
     <PackageId>svgc</PackageId>
-    <Version>1.0.0</Version>
     <Authors>LordLyng</Authors>
   </PropertyGroup>
 
