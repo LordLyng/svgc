@@ -3,14 +3,14 @@ using System;
 using System.Drawing;
 using System.IO;
 
-namespace SvgConverter
+namespace svgc
 {
     public static class CommandHandler
     {
-        public static int Handle(FileInfo input, FileInfo output, string imageType, int height, int width, string background)
+        public static int Handle(FileInfo input, FileInfo output, MagickFormat imageType, int height, int width, string background)
         {
-            if (!output.Exists)
-                output = new FileInfo(input.FullName.Replace("svg", imageType));
+            if (output == null || !output.Exists)
+                output = new FileInfo(input.FullName.Replace("svg", imageType.ToString()));
 
             Color bgColor = string.IsNullOrWhiteSpace(background) ? Color.Transparent : GetRgbFromHex(background);
 
@@ -26,7 +26,7 @@ namespace SvgConverter
 
                 using var image = new MagickImage(fs, readSettings)
                 {
-                    Format = Enum.Parse<MagickFormat>(imageType, true)
+                    Format = imageType
                 };
                 using var outputStream = new FileStream(output.FullName, FileMode.Create);
                 image.Write(outputStream);

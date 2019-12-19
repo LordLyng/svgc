@@ -1,8 +1,8 @@
 {
   "profiles": {
-    "SvgConverter": {
+    "svgc": {
       "commandName": "Project",
-      "commandLineArgs": "SvgConverter --input \"..\\..\\..\\..\\refreshing-id-token.svg\" --image-type \"png\" --height 900  --background ffffff"
+      "commandLineArgs": "svgc --input \"..\\..\\..\\..\\refreshing-id-token.svg\" --image-type \"png\" --height 900  --background ffffff"
     }
   }
 }
